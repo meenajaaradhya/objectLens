@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f4f6f4">
+    <title>ObjectLens — understand what's around you</title>
+    <link rel="stylesheet" href="/static/styles.css">
+  </head>
+  <body>
+    <main id="auth-view" class="auth-layout">
+      <section class="brand-panel">
+        <a class="brand" href="/"> <span class="brand-mark">O</span> ObjectLens</a>
+        <div class="brand-copy">
+          <p class="eyebrow">CURIOUS ABOUT THE WORLD?</p>
+          <h1>Take a closer look at how things work.</h1>
+          <p>One photo opens up a whole new perspective. Explore the mechanics, biology, and structures all around you.</p>
+        </div>
+        <div class="orbit orbit-one"></div>
+        <div class="orbit orbit-two"></div>
+      </section>
+      <section class="auth-card-wrap">
+        <div class="auth-card">
+          <div class="mobile-brand brand"><span class="brand-mark">O</span> ObjectLens</div>
+          <div id="login-form">
+            <p class="eyebrow">YOUR PERSONAL DISCOVERY GUIDE</p>
+            <h2>Let's get curious.</h2>
+            <p class="muted">Create your profile and start exploring. We’ll connect Telegram when your conversation summary is ready.</p>
+            <form id="register-form">
+              <label for="username">Your name</label>
+              <input id="username" name="username" autocomplete="name" placeholder="e.g. Alex" minlength="2" maxlength="50" required>
+              <label for="phone">Telegram phone number</label>
+              <input id="phone" name="phone" type="tel" autocomplete="tel" placeholder="+1 415 555 2671" required>
+              <p class="field-help">Include your country code. At the end, just open the Telegram link and tap Start.</p>
+              <button class="button button-primary button-wide" type="submit">Start exploring <span>→</span></button>
+            </form>
+            <p id="auth-error" class="error" role="alert"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <main id="app-view" class="chat-shell hidden">
+      <header class="topbar">
+        <a class="brand" href="/"><span class="brand-mark">O</span> ObjectLens</a>
+        <div class="header-right">
+          <span class="online-dot"></span><span class="header-label">Your discovery session</span>
+          <button id="logout-button" class="text-button header-logout" type="button">Log out</button>
+          <button id="end-button" class="button button-end">End conversation <span>↗</span></button>
+        </div>
+      </header>
+      <section id="completion-view" class="completion-wrap hidden">
+        <div class="completion-card">
+          <div class="status-icon">✦</div>
+          <p class="eyebrow">CONVERSATION COMPLETE</p>
+          <h1>Your summary is ready.</h1>
+          <p class="muted">Open the one-time link in Telegram and tap Start. The bot will link your account and send your conversation summary.</p>
+          <a id="telegram-link" class="button button-primary button-wide" href="#" target="_blank" rel="noreferrer">Open Telegram <span>↗</span></a>
+          <p id="link-status" class="field-help centered" aria-live="polite">Waiting for you to tap Start in Telegram…</p>
+          <button id="retry-link" class="text-button hidden">Get a fresh Telegram link</button>
+        </div>
+      </section>
+      <section class="chat-main">
+        <div id="empty-state" class="empty-state">
+          <div class="camera-illustration"><span>⌕</span></div>
+          <p class="eyebrow">A WORLD OF DETAILS</p>
+          <h1>What are we looking at?</h1>
+          <p class="muted">Upload a photo and I'll help you uncover how it works, what it's made of, and more.</p>
+          <label class="button button-primary upload-button" for="photo-input">Choose a photo <span>↑</span></label>
+          <input id="photo-input" type="file" accept="image/jpeg,image/png,image/webp" hidden>
+          <p class="field-help">JPEG, PNG, or WebP · up to 10 MB</p>
+        </div>
+        <div id="chat-content" class="chat-content hidden">
+          <div id="object-banner" class="object-banner hidden"></div>
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <div id="aspects" class="aspects hidden">
+            <p class="eyebrow">PICK AN ANGLE TO EXPLORE</p>
+            <div id="aspect-buttons" class="aspect-buttons"></div>
+          </div>
+          <div id="typing" class="typing hidden">ObjectLens is thinking<span>…</span></div>
+        </div>
+      </section>
+      <form id="message-form" class="composer hidden">
+        <input id="message-input" type="text" maxlength="2000" placeholder="Ask a question about this object…" autocomplete="off" required>
+        <button class="send-button" aria-label="Send message" type="submit">↑</button>
+      </form>
+      <p class="footer-note">ObjectLens is AI-powered. Verify important details with trusted sources.</p>
+    </main>
+    <div id="toast" class="toast hidden" role="status"></div>
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
