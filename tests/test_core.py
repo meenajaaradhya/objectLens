@@ -74,6 +74,21 @@ class SettingsTests(unittest.TestCase):
             config = get_settings()
         self.assertEqual(config.gemini_models, ("gemini-3.7-flash",))
 
+    def test_web_summary_delivery_mode_is_supported(self):
+        with patch(
+            "app.config._SECRETS",
+            {"app": {"summary_delivery": "web"}},
+        ), patch.dict(
+            os.environ,
+            {
+                "SUMMARY_DELIVERY": "",
+                "GEMINI_MODELS": "",
+                "GEMINI_MODEL": "",
+            },
+        ):
+            config = get_settings()
+        self.assertEqual(config.summary_delivery, "web")
+
 
 class SecretLoggingTests(unittest.TestCase):
     def test_redacts_bot_token_from_log_output(self):
@@ -252,6 +267,48 @@ class AccountLinkIntegrationTests(unittest.TestCase):
             {"logged_out": True},
         )
         self.assertEqual(self.client.get("/api/auth/me", headers=headers).status_code, 401)
+
+    def test_web_delivery_returns_summary_without_telegram(self):
+        with patch("app.main.settings", replace(settings, summary_delivery="web")):
+            registration = self.client.post(
+                "/api/auth/register",
+                json={"username": "Taylor", "phone": "+1 415 555 2671"},
+            )
+            headers = {
+                "Authorization": f"Bearer {registration.json()['session_token']}",
+            }
+            conversation = self.client.post("/api/conversations", headers=headers)
+            conversation_id = conversation.json()["conversation_id"]
+            with connection() as conn:
+                conn.execute(
+                    "UPDATE conversations SET object_name = ? WHERE id = ?",
+                    ("Test object", conversation_id),
+                )
+            with patch(
+                "app.main.create_summary",
+                new=AsyncMock(return_value="A concise conversation summary."),
+            ):
+                ended = self.client.post(
+                    f"/api/conversations/{conversation_id}/end",
+                    headers=headers,
+                )
+
+        self.assertEqual(registration.status_code, 200)
+        self.assertEqual(
+            ended.json(),
+            {
+                "summary": "A concise conversation summary.",
+                "sent": False,
+                "delivery": "web",
+            },
+        )
+        with connection() as conn:
+            row = conn.execute(
+                "SELECT ended_at, summary FROM conversations WHERE id = ?",
+                (conversation_id,),
+            ).fetchone()
+        self.assertIsNotNone(row["ended_at"])
+        self.assertEqual(row["summary"], "A concise conversation summary.")
 
 
 if __name__ == "__main__":

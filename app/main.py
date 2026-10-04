@@ -49,6 +49,7 @@ def home():
 def health():
     return {
         "status": "ok",
+        "summary_delivery": settings.summary_delivery,
         "gemini_models": settings.gemini_models,
         "groq_configured": bool(settings.groq_api_key),
         "groq_model": settings.groq_model if settings.groq_api_key else None,
@@ -228,6 +229,15 @@ async def end_conversation(
         except AIUnavailableError as exc:
             logger.error("Conversation summary failed for all configured providers: %s", exc)
             raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    if settings.summary_delivery == "web":
+        with connection() as conn:
+            conn.execute(
+                """UPDATE conversations SET ended_at = COALESCE(ended_at, ?), summary = ?
+                       WHERE id = ? AND user_id = ?""",
+                (timestamp(), summary, conversation_id, user["id"]),
+            )
+        return {"summary": summary, "sent": False, "delivery": "web"}
 
     if not settings.bot_token:
         raise HTTPException(status_code=503, detail="Set the Telegram bot token in secrets.toml.")

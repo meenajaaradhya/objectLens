@@ -102,3 +102,15 @@ input::placeholder { color: #abb5af; }
   .composer { flex-shrink: 0; width: calc(100% - 28px); padding: 7px 9px; }
   .message { max-width: 93%; }
 }
+.summary-text {
+  margin: 1rem 0 0;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  color: inherit;
+  font: inherit;
+  line-height: 1.6;
+  text-align: left;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

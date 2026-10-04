@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: objectlens-web
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: SUMMARY_DELIVERY
+        value: web
+      - key: AI_PROVIDER_ORDER
+        value: gemini,groq
+      - key: GEMINI_MODELS
+        value: gemini-3.7-flash,gemini-3.8-flash
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false

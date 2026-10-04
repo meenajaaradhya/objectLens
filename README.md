@@ -52,6 +52,12 @@ Your browser session stays signed in between visits until you select **Log out**
 
 Photos are analyzed in memory and are not saved to disk. Conversation messages and account details are stored in the local SQLite database at `objectlens.sqlite3` by default.
 
+## Hosted website without the Telegram bot
+
+The `deploy/web-without-telegram` branch includes a Render Blueprint for hosting the website and its API together. In this deployment mode, ending a conversation displays the generated summary on the page; it does not send anything to Telegram. The Telegram polling bot is not started.
+
+To deploy, create a **Blueprint** in Render, connect this GitHub repository, and select the `deploy/web-without-telegram` branch. Add at least one provider key (Gemini or Groq) when Render prompts for the secret environment variables. The blueprint uses Render's free web-service plan and local SQLite storage; on that plan, local database contents may be lost when the service restarts or redeploys. This is suitable for a demo, not durable user accounts.
+
 ## AI provider failover
 
 The server tries Gemini models in the order listed in `[ai].gemini_models` (default: Gemini 3.7 Flash, then Gemini 3.8 Flash), followed by the configured provider fallback order (default: Groq). If a model or provider is busy, unavailable, misconfigured, or returns an error, the next model/provider is attempted automatically. The Groq fallback defaults to `qwen/qwen3.8-27b`, a vision-capable model. If all configured models fail, the website displays a short, user-friendly error. Model names can be changed in `secrets.toml`.

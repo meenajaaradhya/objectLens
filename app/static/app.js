@@ -175,7 +175,13 @@ document.querySelector("#end-button").addEventListener("click", async () => {
   button.textContent = "Preparing summary…";
   try {
     const data = await api(`/api/conversations/${conversationId}/end`, { method: "POST" });
-    if (data.sent) {
+    if (data.delivery === "web") {
+      document.querySelector("#completion-view h1").textContent = "Your summary is ready.";
+      document.querySelector("#telegram-link").classList.add("hidden");
+      document.querySelector("#link-status").classList.add("hidden");
+      document.querySelector("#summary-text").textContent = data.summary;
+      document.querySelector("#summary-text").classList.remove("hidden");
+    } else if (data.sent) {
       document.querySelector("#completion-view h1").textContent = "Your summary was sent.";
       document.querySelector("#completion-view .muted").textContent = "Your ObjectLens conversation summary has been delivered to your linked Telegram account.";
       document.querySelector("#telegram-link").classList.add("hidden");

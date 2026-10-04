@@ -34,6 +34,7 @@ class Settings:
     gemini_models: tuple[str, ...]
     groq_api_key: str
     groq_model: str
+    summary_delivery: str
     max_upload_bytes: int
     link_code_ttl_minutes: int
     session_ttl_days: int
@@ -74,6 +75,10 @@ def get_settings() -> Settings:
     if not gemini_models:
         raise ValueError("Configure at least one Gemini model in GEMINI_MODELS or secrets.toml.")
 
+    summary_delivery = _setting("SUMMARY_DELIVERY", "app", "summary_delivery", "telegram")
+    if summary_delivery not in {"telegram", "web"}:
+        raise ValueError("SUMMARY_DELIVERY must be either 'telegram' or 'web'.")
+
     return Settings(
         database_path=_setting("DATABASE_PATH", "app", "database_path", "objectlens.sqlite3"),
         bot_token=_setting("TELEGRAM_BOT_TOKEN", "telegram", "bot_token", ""),
@@ -85,6 +90,7 @@ def get_settings() -> Settings:
         groq_model=_setting(
             "GROQ_MODEL", "ai", "groq_model", "qwen/qwen3.8-27b"
         ),
+        summary_delivery=summary_delivery,
         max_upload_bytes=int(
             _setting("MAX_UPLOAD_BYTES", "app", "max_upload_bytes", 10 * 1024 * 1024)
         ),
